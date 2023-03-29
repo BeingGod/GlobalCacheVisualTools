@@ -12,12 +12,6 @@ git submodule update --init --recursive
 bash ./deploy conf
 ```
 
-## Build
-
-```bash
-bash ./deploy build
-```
-
 ## Install
 
 ```bash
