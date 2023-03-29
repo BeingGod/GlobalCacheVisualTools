@@ -1,0 +1,9 @@
+[submodule "scripts"]
+	path = scripts
+	url = git@github.com:BeingGod/GlobalCacheScripts.git
+[submodule "backend"]
+	path = backend
+	url = git@github.com:Faker0715/GlobalCacheWebServer.git
+[submodule "frontend"]
+	path = frontend
+	url = git@github.com:201712203501015/GlobalCacheVisual.git
