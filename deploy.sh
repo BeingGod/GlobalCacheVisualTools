@@ -149,6 +149,23 @@ function run()
     java -jar $BACKEND_PATH/target/$jar & 
 }
 
+function clean()
+{
+    cd $BACKEND_PATH
+    mvn clean
+
+    cd $BACKEND_PATH/3rdparty/GlobalCacheSDK
+    mvm clean
+
+    cd $$BACKEND_PATH/3rdparty/xxl-job
+    mvn clean
+
+    cd $$BACKEND_PATH/3rdparty/xxl-job-auto-register
+    mvn clean
+
+    rm -rf $FRONTEND_PATH/dist 
+}
+
 function main()
 {
     case $1 in
@@ -162,6 +179,9 @@ function main()
             ;;
         run)
             run
+            ;;
+        clean)
+            clean
             ;;
         *)
             usage
