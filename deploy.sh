@@ -118,11 +118,11 @@ function conf_xxl_job()
     XXL_JOB_LOGBACK=$BACKEND_PATH/3rdparty/xxl-job/xxl-job-admin/src/main/resources/logback.xml
 
     # === mysql ===
-    sed -i "s#spring.datasource.username=root#spring.datasource.username=$MYSQL_USER#g" $XXL_JOB_CONF
-    sed -i "s#spring.datasource.password=root_pwd#spring.datasource.password=$MYSQL_PWD#g" $XXL_JOB_CONF
+    sed "s#spring.datasource.username=root#spring.datasource.username=$MYSQL_USER#g" $XXL_JOB_CONF
+    sed "s#spring.datasource.password=root_pwd#spring.datasource.password=$MYSQL_PWD#g" $XXL_JOB_CONF
 
     # === sl4j ===
-    sed -i "s#/data/applogs#$BACKEND_PATH/log#g" $XXL_JOB_LOGBACK 
+    sed "s#/data/applogs#$BACKEND_PATH/log#g" $XXL_JOB_LOGBACK 
 }
 
 function install()
