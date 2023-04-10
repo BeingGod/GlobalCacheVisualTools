@@ -29,18 +29,18 @@ function conf_global_cache_web_server()
     LOGBACK_XML=$BACKEND_PATH/src/main/resources/logback.xml 
 
     # === redis ===
-    sed -i '' "s#redis_passwd#$REDIS_PWD#g" $BACKEND_YML
+    sed -i "s#redis_passwd#$REDIS_PWD#g" $BACKEND_YML
 
     # === mysql ===
-    sed -i '' "s#mysql_passwd#$MYSQL_PWD#g" $BACKEND_YML 
-    sed -i '' "s#mysql_user#$MYSQL_USER#g" $BACKEND_YML
+    sed -i "s#mysql_passwd#$MYSQL_PWD#g" $BACKEND_YML 
+    sed -i "s#mysql_user#$MYSQL_USER#g" $BACKEND_YML
 
     # === xxl-job ===
-    sed -i '' "s#path_to_xxl-job#$PATH_TO_XXL_JOB#g" $BACKEND_YML
-    sed -i '' "s#admin_passwd#$XXL_JOB_ADMIN_PASSWD#g" $BACKEND_YML
+    sed -i "s#path_to_xxl-job#$PATH_TO_XXL_JOB#g" $BACKEND_YML
+    sed -i "s#admin_passwd#$XXL_JOB_ADMIN_PASSWD#g" $BACKEND_YML
     
     # === sl4j ===
-    sed -i '' "s#<deploy path of GlobalCacheWebServer>#$DEPLOY_PATH#g" $LOGBACK_XML
+    sed -i "s#<deploy path of GlobalCacheWebServer>#$DEPLOY_PATH#g" $LOGBACK_XML
 
 } 
 
@@ -48,7 +48,7 @@ function conf_global_cache_visual()
 {
     CONF_JS=$FRONTEND_PATH/vue.config.js
 
-    sed -i '' "s#0.0.0.0#$PUBLIC_IP#g" $CONF_JS
+    sed -i "s#0.0.0.0#$PUBLIC_IP#g" $CONF_JS
 
     cp /etc/nginx/nginx.conf /etc/nginx/nginx.bak
 
@@ -118,11 +118,11 @@ function conf_xxl_job()
     XXL_JOB_LOGBACK=$BACKEND_PATH/3rdparty/xxl-job/xxl-job-admin/src/main/resources/logback.xml
 
     # === mysql ===
-    sed -i '' "s#spring.datasource.username=root#spring.datasource.username=$MYSQL_USER#g" $XXL_JOB_CONF
-    sed -i '' "s#spring.datasource.password=root_pwd#spring.datasource.password=$MYSQL_PWD#g" $XXL_JOB_CONF
+    sed -i "s#spring.datasource.username=root#spring.datasource.username=$MYSQL_USER#g" $XXL_JOB_CONF
+    sed -i "s#spring.datasource.password=root_pwd#spring.datasource.password=$MYSQL_PWD#g" $XXL_JOB_CONF
 
     # === sl4j ===
-    sed -i '' "s#/data/applogs#$BACKEND_PATH/log#g" $XXL_JOB_LOGBACK 
+    sed -i "s#/data/applogs#$BACKEND_PATH/log#g" $XXL_JOB_LOGBACK 
 }
 
 function install()
@@ -163,6 +163,7 @@ function clean()
     cd $$BACKEND_PATH/3rdparty/xxl-job-auto-register
     mvn clean
 
+    rm -rf $FRONTEND_PATH/node_modules
     rm -rf $FRONTEND_PATH/dist 
 }
 
