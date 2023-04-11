@@ -106,7 +106,7 @@ http {
             location = /50x.html {
         }
     }
-" > /etc/nginx/nginx.conf
+}" > /etc/nginx/nginx.conf
 
     systemctl start nginx
     nginx -s reload
