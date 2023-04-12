@@ -12,7 +12,6 @@ MYSQL_PWD=mysql_pwd # mysql密码
 # === redis ===
 REDIS_PWD=redis_pwd # redis密码
 # === xxl-job ===
-XXL_JOB_ADMIN_PASSWD=admin_passwd # xxl-job admin密码
 PATH_TO_XXL_JOB=$BACKEND_PATH/log/xxl-job # xxl-job日志路径
 # === others ===
 PUBLIC_IP=192.168.1.1 # 集群公网IP
@@ -37,7 +36,7 @@ function conf_global_cache_web_server()
 
     # === xxl-job ===
     sed -i "s#path_to_xxl-job#$PATH_TO_XXL_JOB#g" $BACKEND_YML
-    sed -i "s#admin_passwd#$XXL_JOB_ADMIN_PASSWD#g" $BACKEND_YML
+    sed -i "s#admin_passwd#123456#g" $BACKEND_YML
     
     # === sl4j ===
     sed -i "s#<deploy path of GlobalCacheWebServer>#$DEPLOY_PATH#g" $LOGBACK_XML
@@ -118,7 +117,7 @@ function conf_xxl_job()
     XXL_JOB_LOGBACK=$BACKEND_PATH/3rdparty/xxl-job/xxl-job-admin/src/main/resources/logback.xml
 
     # === port ===
-    sed -i "s#server.port=8080#server.port=9090#g" $XXL_JOB_CONF
+    sed -i "s#server.port=8080#server.port=9091#g" $XXL_JOB_CONF
 
     # === mysql ===
     sed -i "s#spring.datasource.username=root#spring.datasource.username=$MYSQL_USER#g" $XXL_JOB_CONF
