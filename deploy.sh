@@ -173,8 +173,7 @@ function clean()
     cd $$BACKEND_PATH/3rdparty/xxl-job-auto-register
     mvn clean
 
-    rm -rf $FRONTEND_PATH/node_modules
-    rm -rf $FRONTEND_PATH/dist 
+    rm -rf $FRONTEND_PATH/dist
 }
 
 function main()
