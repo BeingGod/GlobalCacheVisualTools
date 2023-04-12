@@ -140,15 +140,17 @@ function install()
 
 function run()
 {
+    mkdir -p /var/log/gcache_vis_tools/
+
     # === run xxl-job ===
     cd $BACKEND_PATH/3rdparty/xxl-job/xxl-job-admin/target
     jar=$(ls *.jar)
-    java -jar $BACKEND_PATH/3rdparty/xxl-job/xxl-job-admin/target/$jar &
+    nohup java -jar $BACKEND_PATH/3rdparty/xxl-job/xxl-job-admin/target/$jar > /var/log/gcache_vis_tools/xxl-job.log &
     
     # === run web server ===
     cd $BACKEND_PATH/target
     jar=$(ls *.jar)
-    java -jar $BACKEND_PATH/target/$jar & 
+    nohup java -jar $BACKEND_PATH/target/$jar > /var/log/gcache_vis_tools/hwbackend.log & 
 }
 
 function clean()
