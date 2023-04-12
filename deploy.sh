@@ -127,6 +127,14 @@ function conf_xxl_job()
     sed -i "s#/data/applogs#$BACKEND_PATH/log#g" $XXL_JOB_LOGBACK 
 }
 
+function conf_sdk()
+{
+    SDK_CONF=$BACKEND_PATH/3rdparty/GlobalCacheSDK/src/main/resources/application.yml
+
+    # === scripts path ===
+    sed -i "s#<path to GlobalCacheScripts>#$SCRIPT_HOME/scripts#g" $SDK_CONF 
+}
+
 function install()
 {
     cd $BACKEND_PATH
@@ -134,8 +142,6 @@ function install()
 
     cd $FRONTEND_PATH
     bash $FRONTEND_PATH/build.sh
-
-    cp -r $SCRIPTS_PATH /home/GlobalCacheScripts
 }
 
 function run()
@@ -178,6 +184,7 @@ function main()
             conf_global_cache_visual
             conf_global_cache_web_server
             conf_xxl_job 
+            conf_sdk
             ;;
         install)
             install
