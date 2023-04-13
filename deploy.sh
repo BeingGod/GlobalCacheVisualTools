@@ -41,6 +41,8 @@ function conf_global_cache_web_server()
     # === sl4j ===
     sed -i "s#<deploy path of GlobalCacheWebServer>#$DEPLOY_PATH#g" $LOGBACK_XML
 
+    # === scripts path ===
+    sed -i "s#<path to GlobalCacheScripts>#$SCRIPT_HOME/scripts#g" $BACKEND_YML 
 } 
 
 function conf_global_cache_visual()
@@ -129,14 +131,6 @@ function conf_xxl_job()
     sed -i "s#/data/applogs#$BACKEND_PATH/log#g" $XXL_JOB_LOGBACK 
 }
 
-function conf_sdk()
-{
-    SDK_CONF=$BACKEND_PATH/3rdparty/GlobalCacheSDK/src/main/resources/application.yml
-
-    # === scripts path ===
-    sed -i "s#<path to GlobalCacheScripts>#$SCRIPT_HOME/scripts#g" $SDK_CONF 
-}
-
 function install()
 {
     cd $BACKEND_PATH
@@ -185,7 +179,6 @@ function main()
             conf_global_cache_visual
             conf_global_cache_web_server
             conf_xxl_job 
-            conf_sdk
             ;;
         install)
             install
