@@ -46,8 +46,10 @@ function conf_global_cache_web_server()
 function conf_global_cache_visual()
 {
     CONF_JS=$FRONTEND_PATH/vue.config.js
+    API_JS=$FRONTEND_PATH/src/api/port.js
 
     sed -i "s#0.0.0.0#$PUBLIC_IP#g" $CONF_JS
+    sed -i "s#0.0.0.0#$PUBLIC_IP#g" $API_JS
 
     cp /etc/nginx/nginx.conf /etc/nginx/nginx.bak
 
