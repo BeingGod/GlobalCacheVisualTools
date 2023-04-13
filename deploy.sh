@@ -172,6 +172,7 @@ function clean()
     mvn clean
 
     rm -rf $FRONTEND_PATH/dist
+    rm -rf $FRONTEND_PATH/node_modules
 }
 
 function main()
