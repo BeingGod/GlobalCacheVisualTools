@@ -138,6 +138,8 @@ function install()
 
     cd $FRONTEND_PATH
     bash $FRONTEND_PATH/build.sh
+
+    chmod 777 -R $SCRIPTS_PATH/data
 }
 
 function run()
