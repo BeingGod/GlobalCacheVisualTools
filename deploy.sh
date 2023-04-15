@@ -144,17 +144,42 @@ function install()
 
 function run()
 {
-    mkdir -p /var/log/gcache_vis_tools/
+    if [ ! -d "/var/log/gcache_vis_tools" ]; then
+        mkdir -p /var/log/gcache_vis_tools/
+    fi
 
     # === run xxl-job ===
-    cd $BACKEND_PATH/3rdparty/xxl-job/xxl-job-admin/target
-    jar=$(ls *.jar)
-    nohup java -jar $BACKEND_PATH/3rdparty/xxl-job/xxl-job-admin/target/$jar > /var/log/gcache_vis_tools/xxl-job.log &
+    jar=$(ls $BACKEND_PATH/3rdparty/xxl-job/xxl-job-admin/target/*.jar)
+    if [[ $(ps -ef | grep "$jar" | grep -v "grep" | wc -l) -eq 1 ]]; then
+        pid=$(ps -ef | grep "$jar" | grep -v "grep" | awk -F " " {'print $2'})
+        kill -9 $pid
+    fi
+    nohup java -jar $jar > /var/log/gcache_vis_tools/xxl-job.log &
     
     # === run web server ===
-    cd $BACKEND_PATH/target
-    jar=$(ls *.jar)
-    nohup java -jar $BACKEND_PATH/target/$jar > /var/log/gcache_vis_tools/hwbackend.log & 
+    jar=$(ls $BACKEND_PATH/target/*.jar)
+    if [[ $(ps -ef | grep "$jar" | grep -v "grep" | wc -l) -eq 1 ]]; then
+        pid=$(ps -ef | grep "$jar" | grep -v "grep" | awk -F " " {'print $2'})
+        kill -9 $pid
+    fi
+    nohup java -jar $jar > /var/log/gcache_vis_tools/hwbackend.log & 
+}
+
+function stop()
+{
+    # === run web server ===
+    jar=$(ls $BACKEND_PATH/3rdparty/xxl-job/xxl-job-admin/target/*.jar)
+    if [[ $(ps -ef | grep "$jar" | grep -v "grep" | wc -l) -eq 1 ]]; then
+        pid=$(ps -ef | grep "$jar" | grep -v "grep" | awk -F " " {'print $2'})
+        kill -9 $pid
+    fi
+
+    # === stop xxl-job ===
+    jar=$(ls $BACKEND_PATH/target/*.jar)
+    if [[ $(ps -ef | grep "$jar" | grep -v "grep" | wc -l) -eq 1 ]]; then
+        pid=$(ps -ef | grep "$jar" | grep -v "grep" | awk -F " " {'print $2'})
+        kill -9 $pid
+    fi
 }
 
 function clean()
@@ -188,6 +213,9 @@ function main()
             ;;
         run)
             run
+            ;;
+        stop)
+            stop
             ;;
         clean)
             clean
