@@ -16,8 +16,6 @@ PATH_TO_XXL_JOB=$BACKEND_PATH/log/xxl-job # xxl-job日志路径
 # === others ===
 PUBLIC_IP=192.168.1.1 # 集群公网IP
 DEPLOY_PATH=$SCRIPT_HOME # 部署路径
-# === frontend ===
-URL="https://github.com/201712203501015/GlobalCacheVisual/releases/download/6c22d4/GlobalCacheVisual.tgz"
 
 function usage() 
 {
@@ -51,8 +49,10 @@ function conf_global_cache_visual()
 {
     cd $SCRIPT_HOME
 
-    wget $URL
-    npm install --offline ./GlobalCacheVisual.tgz
+    if [ -f "$SCRIPT_HOME/GlobalCacheVisual.tgz" ]; then
+        FRONTEND_PATH=$SCRIPT_HOME/node_modules/GlobalCacheVisual
+        npm install --offline ./GlobalCacheVisual.tgz
+    fi
 
     CONF_JS=$FRONTEND_PATH/vue.config.js
     API_JS=$FRONTEND_PATH/src/api/port.js
