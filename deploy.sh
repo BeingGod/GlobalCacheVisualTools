@@ -44,8 +44,13 @@ function install_mongodb()
 
     yum -y install python2 python2-setuptools python2-devel net-tools
 
-    wget https://mirrors.huaweicloud.com/kunpeng/yum/el/7/aarch64/Packages/database/mongo-4.0.12-1.el7.aarch64.rpm --no-check-certificate
-    wget https://mirrors.huaweicloud.com/kunpeng/yum/el/7/aarch64/Packages/database/mongodb-tools-4.0.6-1.aarch64.rpm --no-check-certificate
+    if [ ! -f "/home/mongo-4.0.12-1.el7.aarch64.rpm" ]; then
+        wget https://mirrors.huaweicloud.com/kunpeng/yum/el/7/aarch64/Packages/database/mongo-4.0.12-1.el7.aarch64.rpm --no-check-certificate
+    fi
+
+    if [ ! -f "/home/mongodb-tools-4.0.6-1.aarch64.rpm" ]; then
+        wget https://mirrors.huaweicloud.com/kunpeng/yum/el/7/aarch64/Packages/database/mongodb-tools-4.0.6-1.aarch64.rpm --no-check-certificate
+    fi
 
     yum install -y mongo-4.0.12-1.el7.aarch64.rpm mongodb-tools-4.0.6-1.aarch64.rpm 
 
@@ -99,7 +104,13 @@ function install_mysql()
 
     mkdir -p /data/mysql
     cd /data/mysql
+    if [ -d "/data/mysql/data" ]; then
+        rm -rf /data/mysql/data
+    fi
+
     mkdir data tmp run log relaylog
+
+    chown -R mysql:mysql /data/mysql
 
     yum install -y mysql
 
