@@ -1,7 +1,6 @@
 #!/bin/bash
 set -x
 SCRIPT_HOME=$(cd $(dirname $0)/; pwd)
-
 BACKEND_PATH=$SCRIPT_HOME/backend
 FRONTEND_PATH=$SCRIPT_HOME/node_modules/GlobalCacheVisual
 SCRIPTS_PATH=$SCRIPT_HOME/scripts
@@ -22,8 +21,121 @@ function usage()
     printf "Usage: deploy.sh <command> \n support command: conf, install, run \n"
 }
 
+function install_nginx()
+{
+    echo "[WARN] install nginx start"
+
+    yum install -y nginx
+
+    setenforce permissive
+    sed -i 's#SELINUX=enforcing#SELINUX=permissive#g' /etc/selinux/config
+
+    systemctl start nginx														   
+    systemctl enable nginx
+
+    echo "[WARN] install nginx end"
+}
+
+function install_mongodb()
+{
+    echo "[WARN] install mongodb start"
+
+    cd /home
+
+    yum -y install python2 python2-setuptools python2-devel net-tools
+
+    wget https://mirrors.huaweicloud.com/kunpeng/yum/el/7/aarch64/Packages/database/mongo-4.0.12-1.el7.aarch64.rpm --no-check-certificate
+    wget https://mirrors.huaweicloud.com/kunpeng/yum/el/7/aarch64/Packages/database/mongodb-tools-4.0.6-1.aarch64.rpm --no-check-certificate
+
+    yum install -y mongo-4.0.12-1.el7.aarch64.rpm mongodb-tools-4.0.6-1.aarch64.rpm 
+
+    mkdir -p /data/mongo
+
+    rm -f /etc/mongodb.cnf
+
+    echo "dbpath=/data/mongo
+logpath=/data/mongo/mongo.log
+logappend=true
+port=27017
+fork=true
+auth=false
+bind_ip=0.0.0.0" > /etc/mongodb.cnf
+
+    echo "[WARN] install mongodb end"
+}
+
+function install_redis()
+{
+    echo "[WARN] install redis start"
+
+    cd /home
+
+    wget https://download.redis.io/releases/redis-6.2.11.tar.gz --no-check-certificate
+    tar -xzvf redis-6.2.11.tar.gz
+
+    mv redis-6.2.11 redis
+    
+    cd redis
+    make -j
+    make install
+
+    sed -i "s/# ignore-warnings ARM64-COW-BUG/ignore-warnings ARM64-COW-BUG/g" redis.conf
+    sed -i "s/# bind 127.0.0.1 -::1/bind 127.0.0.1 -::1/g" redis.conf
+    sed -i "s/protected-mode yes/protected-mode no/g" redis.conf
+    sed -i "s/daemonize no/daemonize yes/g" redis.conf 
+    sed -i "s/# requirepass foobared/requirepass $REDIS_PWD/g" redis.conf
+    sed -i 's#logfile ""#logfile "/var/log/redis/redis.log"#g' redis.conf
+
+    mkdir -p /var/log/redis
+
+    echo "[WARN] install redis end"
+}
+
+function install_mysql()
+{
+    echo "[WARN] install mysql start"
+
+    cd /home
+
+    mkdir -p /data/mysql
+    cd /data/mysql
+    mkdir data tmp run log relaylog
+
+    yum install -y mysql
+
+    echo "[mysqld_safe]
+log-error=/data/mysql/log/mysql.log
+pid-file=/data/mysql/run/mysqld.pid
+[mysqldump]
+quick
+[mysql]
+no-auto-rehash
+[client]
+default-character-set=utf8
+[mysqld]
+basedir=/usr/local/mysql
+socket=/data/mysql/run/mysql.sock
+tmpdir=/data/mysql/tmp
+datadir=/data/mysql/data
+default_authentication_plugin=mysql_native_password
+port=3306
+user=mysql" > /etc/my.cnf
+
+    chown mysql:mysql /etc/my.cnf
+    chmod 755 /data/mysql/data/
+
+    if [ $(cat "/etc/profile" | grep -oe "export PATH=$PATH:/usr/local/mysql/bin" | wc -l ) -eq 0 ]; then
+        echo "export PATH=$PATH:/usr/local/mysql/bin" >> /etc/profile
+        source /etc/profile
+    fi
+
+    echo "[WARN] install mysql end"
+}
+
 function conf_global_cache_web_server()
 {
+    echo "[WARN] configure global cache web server start"
+
     BACKEND_YML=$BACKEND_PATH/src/main/resources/application.yml
     LOGBACK_XML=$BACKEND_PATH/src/main/resources/logback.xml 
 
@@ -43,10 +155,14 @@ function conf_global_cache_web_server()
 
     # === scripts path ===
     sed -i "s#<path to GlobalCacheScripts>#$SCRIPT_HOME/scripts#g" $BACKEND_YML 
+
+    echo "[WARN] configure global cache web server end"
 } 
 
 function conf_global_cache_visual()
 {
+    echo "[WARN] configure global cache visual start"
+
     cd $SCRIPT_HOME
 
     if [ -f "$SCRIPT_HOME/GlobalCacheVisual.tgz" ]; then
@@ -120,10 +236,14 @@ http {
 
     systemctl start nginx
     nginx -s reload
+
+    echo "[WARN] configure global cache visual end"
 }
 
 function conf_xxl_job()
 {
+    echo "[WARN] configure xxl job start"
+
     XXL_JOB_CONF=$BACKEND_PATH/3rdparty/xxl-job/xxl-job-admin/src/main/resources/application.properties
     XXL_JOB_LOGBACK=$BACKEND_PATH/3rdparty/xxl-job/xxl-job-admin/src/main/resources/logback.xml
 
@@ -136,10 +256,14 @@ function conf_xxl_job()
 
     # === sl4j ===
     sed -i "s#/data/applogs#$BACKEND_PATH/log#g" $XXL_JOB_LOGBACK 
+
+    echo "[WARN] configure xxl job end"
 }
 
 function install()
 {
+    echo "[WARN] install global cache visual tools start"
+
     cd $BACKEND_PATH
     bash $BACKEND_PATH/build.sh
 
@@ -147,6 +271,8 @@ function install()
     bash $FRONTEND_PATH/build.sh
 
     chmod 777 -R $SCRIPTS_PATH/data
+
+    echo "[WARN] install global cache visual tools end"
 }
 
 function run()
@@ -155,7 +281,22 @@ function run()
         mkdir -p /var/log/gcache_vis_tools/
     fi
 
-    # === run xxl-job ===
+    # launch redis
+    if [[ $(ps -ef | grep "redis-server" | grep -v "grep" | wc -l) -eq 0 ]]; then
+        redis-server /home/redis/redis.conf
+    fi
+
+    # launch mongo
+    if [[ $(ps -ef | grep "/usr/local/mongo/bin/mongo" | grep -v "grep" | wc -l) -eq 0 ]]; then
+        nohup /usr/local/mongo/bin/mongod -f /etc/mongodb.cnf > /var/log/gcache_vis_tools/mongod.log &
+    fi 
+
+    # launch mysql
+    if [[ $(ps -ef | grep "mysqld --defaults-file=/etc/my.cnf &" | grep -v "grep" | wc -l) -eq 0 ]]; then
+        mysqld --defaults-file=/etc/my.cnf &
+    fi  
+
+    # run xxl-job
     jar=$(ls $BACKEND_PATH/3rdparty/xxl-job/xxl-job-admin/target/*.jar)
     if [[ $(ps -ef | grep "$jar" | grep -v "grep" | wc -l) -eq 1 ]]; then
         pid=$(ps -ef | grep "$jar" | grep -v "grep" | awk -F " " {'print $2'})
@@ -163,13 +304,13 @@ function run()
     fi
     nohup java -jar $jar > /var/log/gcache_vis_tools/xxl-job.log &
     
-    # === run web server ===
+    # run web server
     jar=$(ls $BACKEND_PATH/target/*.jar)
     if [[ $(ps -ef | grep "$jar" | grep -v "grep" | wc -l) -eq 1 ]]; then
         pid=$(ps -ef | grep "$jar" | grep -v "grep" | awk -F " " {'print $2'})
         kill -9 $pid
     fi
-    nohup java -jar $jar > /var/log/gcache_vis_tools/hwbackend.log & 
+    nohup java -jar $jar > /var/log/gcache_vis_tools/hwbackend.log &
 }
 
 function stop()
@@ -209,6 +350,12 @@ function clean()
 function main()
 {
     case $1 in
+        deps)
+            install_nginx
+            install_mongodb
+            install_redis
+            install_mysql
+            ;;
         conf)
             conf_global_cache_visual
             conf_global_cache_web_server
