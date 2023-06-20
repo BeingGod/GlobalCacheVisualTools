@@ -193,7 +193,7 @@ function conf_global_cache_visual()
     cp /etc/nginx/nginx.conf /etc/nginx/nginx.bak
 
     echo "
-user nginx;
+user root;
 worker_processes auto;
 error_log /var/log/nginx/error.log;
 pid /run/nginx.pid;
