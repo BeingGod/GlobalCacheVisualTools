@@ -75,7 +75,10 @@ function install_redis()
 
     cd /home
 
-    wget https://download.redis.io/releases/redis-6.2.11.tar.gz --no-check-certificate
+    if [ ! -f "/home/redis-6.2.11.tar.gz" ]; then
+        wget https://download.redis.io/releases/redis-6.2.11.tar.gz --no-check-certificate
+    fi
+
     tar -xzvf redis-6.2.11.tar.gz
 
     mv redis-6.2.11 redis
