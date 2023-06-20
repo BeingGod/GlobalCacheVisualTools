@@ -2,7 +2,7 @@
 set -x
 SCRIPT_HOME=$(cd $(dirname $0)/; pwd)
 BACKEND_PATH=$SCRIPT_HOME/backend
-FRONTEND_PATH=$SCRIPT_HOME/node_modules/GlobalCacheVisual
+FRONTEND_PATH=$SCRIPT_HOME/frontend
 SCRIPTS_PATH=$SCRIPT_HOME/scripts
 
 # === mysql ===
@@ -18,7 +18,7 @@ DEPLOY_PATH=$SCRIPT_HOME # 部署路径
 
 function usage() 
 {
-    printf "Usage: deploy.sh <command> \n support command: conf, install, run \n"
+    printf "Usage: deploy.sh <command> \n support command: deps, conf, install, run \n"
 }
 
 function install_nginx()
@@ -306,7 +306,7 @@ function run()
     fi 
 
     # launch mysql
-    if [[ $(ps -ef | grep "mysqld --defaults-file=/etc/my.cnf &" | grep -v "grep" | wc -l) -eq 0 ]]; then
+    if [[ $(ps -ef | grep "mysqld --defaults-file=/etc/my.cnf" | grep -v "grep" | wc -l) -eq 0 ]]; then
         mysqld --defaults-file=/etc/my.cnf &
     fi  
 
