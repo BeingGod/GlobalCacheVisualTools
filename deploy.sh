@@ -181,6 +181,7 @@ function conf_global_cache_visual()
 
     if [ -f "$SCRIPT_HOME/GlobalCacheVisual.tgz" ]; then
         FRONTEND_PATH=$SCRIPT_HOME/node_modules/GlobalCacheVisual
+        rm -rf $SCRIPT_HOME/node_modules $SCRIPT_HOME/package.json $SCRIPT_HOME/package-lock.json
         npm install --offline ./GlobalCacheVisual.tgz
     fi
 
