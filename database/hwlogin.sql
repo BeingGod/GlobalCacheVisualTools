@@ -79,6 +79,6 @@ CREATE TABLE `sys_user`  (
 -- ----------------------------
 -- Records of sys_user
 -- ----------------------------
-INSERT INTO `sys_user` VALUES (1252, 'root', '$2a$10$Llw2mgl2uFOD8hAtrEo/QOTvq5bJEmKcswjlrgs3VLqZrR2YKiZtK', '0', NULL, '18253201677', '0', 0);
+INSERT INTO `sys_user` VALUES (0, 'root', '$2a$10$Llw2mgl2uFOD8hAtrEo/QOTvq5bJEmKcswjlrgs3VLqZrR2YKiZtK', '0', NULL, '', '0', 0);
 
 SET FOREIGN_KEY_CHECKS = 1;
