@@ -18,26 +18,12 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for ceph
--- ----------------------------
-DROP TABLE IF EXISTS `ceph`;
-CREATE TABLE `ceph`  (
-  `ceph` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
-  `ip` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Records of ceph
--- ----------------------------
-
--- ----------------------------
 -- Table structure for finish
 -- ----------------------------
 DROP TABLE IF EXISTS `finish`;
 CREATE TABLE `finish`  (
   `id` int NOT NULL,
   `is_finished` int NOT NULL,
-  `ceph1` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = DYNAMIC;
 
